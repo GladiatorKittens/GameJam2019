@@ -39,8 +39,10 @@ class Player {
         });
         scene.anims.create({
             key: "jump",
-            frames: this.anims.
-        })
+            frames: this.anims.generateFrameNumbers("player", { frames: [6, 7] }),
+            frameRate: 5,
+            repeat: -1
+        });
     }
     takeDamage() {
         this.currentLivesUsed++

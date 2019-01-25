@@ -31,7 +31,7 @@ function preload() {
 };
 
 function create(){
-    var map = createTilemap.call(this, mapKey);//TODO, add in first map key
+    var map = createTilemap.call(this, 1);//TODO, add in first map key
     createCamera.call(this, map);
     createCollision.call(this, map);
     createKeys.call(this);
