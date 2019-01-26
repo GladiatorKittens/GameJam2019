@@ -9,7 +9,7 @@ var config = {
         arcade: {
             debug: true,
             gravity: {
-                y: 400
+                y: 900
             }
         }
     },
@@ -22,8 +22,10 @@ var config = {
 };
 //Any global variable declarations go here
 var game = new Phaser.Game(config);
-var player, home;
-var levelNum = "1";
+var player, home, cursors;
+var levelNum = 1;
+
+
 function preload() {
     console.log(this);
     this.load.image("tilesheet", "/assets/tilesheet.png");
@@ -33,27 +35,34 @@ function preload() {
     this.load.spritesheet(
         "player",
         "/assets/CatAnims.png",
-        {frameWidth: 64, frameHeight: 64}
+        {frameWidth: 44, frameHeight: 54}
     );
-    this.load.image("sword", "/assets/tempSword.png")
+    this.load.spritesheet("sword",
+        "/assets/Sword.png",
+        { frameWidth: 32, frameHeight: 32 }
+    );
 };
 
 function create(){
-    var map = createTilemap.call(this, levelNum);//TODO, add in first map key
+    var map = createTilemap.call(this, levelNum);
     createCamera.call(this, map);
     createCollision.call(this, map);
+    swordAnimation.call(this);
+    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    //player setup controls and collision
     createKeys.call(this);
-    //player setup
+    player.animations();
     this.input.keyboard.on("keydown_SPACE", player.swipe, this);   
-    this.physics.add.overlap(player, home, endOfLevel, null, this);
+    //this.physics.add.overlap(player.sprite, home, endOfLevel, null, this);
     //create groups
-    sword = this.physics.add.group({
+    playerSword = this.physics.add.group({
         defaultKey: "sword",
         maxSize: 1
     });
 }
 function update() {
-
+    player.update();
+    player.movement();
 }
 
 //NON-PHASER FUNCTIONS
@@ -64,10 +73,16 @@ function endOfLevel(levelKey){
 function swordAnimation(){
     this.anims.create({
         key: "swipe",
-        frames: this.anims.generateFrameNumbers("sword", { start: 1, end: 3 }),//TODO - implement frame numbers
-        frameRate: 5, //TODO - edit as neccessary for attack speed
-        repeat: -1
+        frames: this.anims.generateFrameNumbers("sword", { start: 0, end: 3 }),
+        frameRate: 10
     });
+}
+function onCompleteEvent(animation, frame, gameObject) {
+    gameObject.destroy();
+}
+function onUpdateEvent(animation, frame, gameObject) {
+    gameObject.x = player.x + (30 * player.flip);
+    gameObject.y = player.y;
 }
 function killSword(sword) {
     sword.disableBody(true, true);

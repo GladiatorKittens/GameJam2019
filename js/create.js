@@ -1,11 +1,17 @@
 function createTilemap(mapKey) {
     var map = this.make.tilemap({ key: mapKey });
-    var tileSet = map.addTilesetImage("landscape", "tilesheet");
+    var tileSet = map.addTilesetImage("tilesheet", "tilesheet");
     //create layers
-    //map.createStaticLayer("sky", tileSet, 0, 0);
+    map.createStaticLayer("sky", tileSet, 0, 0);
     map.createStaticLayer("background", tileSet, 0, 0);
     //map.createStaticLayer("para", tileSet, 0, 0);
-    map.createStaticLayer("collision", tileSet, 0, 0);
+    var collisionlayer = map.createStaticLayer("collision", tileSet, 0, 0);
+    collisionlayer.setCollisionByProperty({ collides: true });
+
+
+    collisionlayer.setCollisionBetween(0, 1000, true);
+    //TODO - here is where you add colliders
+
 
     //find player spawn point and create them
     //var playerSpawn = map.findObject("obj", function (object) {
@@ -14,12 +20,13 @@ function createTilemap(mapKey) {
     //    }
     //});
     var playerSpawn = {
-        x: 10,
-        y: 10
-    }
+        x: 100,
+        y: 100
+    }// TEMP DECLARATION
     //player setup
     createPlayer.call(this, playerSpawn);
-    //create any groups
+
+    this.physics.add.collider(player.sprite, collisionlayer);
 
     //create any spawned in point things
 
@@ -31,20 +38,19 @@ function createTilemap(mapKey) {
     return map;
 }
 function createPlayer(playerSpawn) {
-    //TODO - edit in frame number
-    player = new Player(this, playerSpawn.x, playerSpawn.y, "player", "frame_num");
+    player = new Player(this, playerSpawn.x, playerSpawn.y, "player");
     player.sprite.setCollideWorldBounds(true);
 }
 function createCamera(map) {
     var camera = this.cameras.getCamera("");
-    camera.startFollow(player);
+    camera.startFollow(player.sprite);
     camera.setBounds(0, 0, map.width * map.tileWidth, map.height * map.tileHeight);
-    camera.zoom = 2;
+    camera.zoom = 1;
 }
 function createCollision(map){
-    var collisionLayer = map.getLayer("collision").tilemapLayer;
-    collisionLayer.setCollisionBetween(0, 1000);
-    //TODO - here is where you add colliders
+    //var collisionLayer = map.getLayer("collision").tilemapLayer;
+
+
 }
 function createKeys() {
     cursors = this.input.keyboard.createCursorKeys();
