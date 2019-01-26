@@ -11,10 +11,6 @@ class Player {
         this.maxJump = 2;
         this.flip = 1;
     }
-    update() {
-        //console.log(this.flip);
-
-    }
     swipe() {
         var sword = playerSword.get(player.x + 30 * player.flip, player.y);
         if (sword) {
@@ -22,18 +18,23 @@ class Player {
             sword.enableBody(false);
             sword.setActive(true);
             sword.setVisible(true);
-            sword.setGravityY(-900);
+            sword.setGravityY(-200);
             if (player.flip == -1) {
                 sword.flipX = true;
             } 
             //TODO - put colliders for various things here
+            if (dogs.length > 0) {
+                for (var i = 0; i < dogs.length; i++) {
+                    this.scene.scene.physics.add.collider(sword, dogs[i], dogDamagedListener, null, this);
+                }
+            }
             //scene.physics.add.collider(sword, Enemies, killEnemy, null, this);
             sword.on("animationcomplete", onCompleteEvent);
             sword.on("animationupdate", onUpdateEvent);
             sword.play("swipe");
         }
     }
-    animations() {//TODO - fix in frame numbers
+    animations() {
         this.scene.anims.create({
             key: "walk",
             frames: this.scene.anims.generateFrameNumbers("player", { start: 0, end: 5 }),
@@ -48,7 +49,7 @@ class Player {
         });
         this.scene.anims.create({
             key: "jump",
-            frames: this.scene.anims.generateFrameNumbers("player", { frames: [6, 7] }),
+            frames: this.scene.anims.generateFrameNumbers("player", { start: 5, end: 6 }),
             frameRate: 5,
             repeat: -1
         });
@@ -66,14 +67,14 @@ class Player {
     movement() {
         //Right
         if (cursors.right.isDown) {
-            this.sprite.setVelocityX(100);
+            this.sprite.setVelocityX(150);
             this.sprite.anims.play("walk", true);
             this.sprite.flipX = false;
             this.flip = 1;
         }
         //Left
         else if (cursors.left.isDown) {
-            this.sprite.setVelocityX(-100);
+            this.sprite.setVelocityX(-150);
             this.sprite.anims.play("walk", true);
             this.sprite.flipX = true;
             this.flip = -1;
@@ -81,7 +82,7 @@ class Player {
         //Down
         else if (cursors.down.isDown) {
             this.sprite.setVelocityX(0);
-            this.anims.play("down", true);
+            this.sprite.anims.play("down", true);
         }
         else if (cursors.space.isDown) {
             this.swipe();
@@ -92,14 +93,20 @@ class Player {
             this.sprite.anims.play("idle", true);
         }
 
-        //if (player.body.blocked.down) {
-        //    player.jumpCount = 0;
-        //}
-        if (cursors.up.JustDown && this.jumpCount < this.maxJump) {
-            this.jumpCount++;
-            this.sprite.setVelocityY(-250);
+        if (this.sprite.body.blocked.down) {
+            this.jumpCount = 0;
         }
-
+        //Jump
+        if (Phaser.Input.Keyboard.JustDown(cursors.up) && this.jumpCount < this.maxJump) {
+            this.jumpCount++;
+            this.sprite.setVelocityY(-290);
+            this.sprite.anims.play("jump", true);
+        }
+        if (this.sprite.body.velocity.y < 0) {
+            this.sprite.anims.play("jump", true);
+        } else if (this.sprite.body.velocity.y > 0) {
+            this.sprite.anims.play("fall", true);
+        }
         //set the values for the sword to follow
         this.x = this.sprite.x;
         this.y = this.sprite.y;
@@ -114,5 +121,62 @@ class Player {
         this.scene.input.enabled = false;
         this.scene.physics.pause();
         alert("you have been defeated!");
+    }
+}
+
+class Dog {
+    constructor(scene, x, y, texture) {
+        this.scene = scene;
+        this.x = x;
+        this.y = y;
+        this.flip = 1;
+        this.health = 2;
+        this.sprite = this.scene.physics.add.sprite(x, y, texture, 1);
+        this.detectedEnemy = false;
+    }
+    detect() {
+        if (Phaser.Math.Distance.Between(player.x, player.y, this.x, this.y) < 320) {
+            this.detectedEnemy = true;
+            this.movement();
+        } else {
+            this.detectedEnemy = false;
+        }
+    }
+    update() {
+        if (this.detectedEnemy === false) {
+            this.sprite.anims.play("dogIdle", true);
+        } else {
+            this.movement();
+        }
+        this.x = this.sprite.x;
+        this.y = this.sprite.y;
+    }
+    attack() {
+        this.sprite.anims.play("dogAttack", true);
+    }
+    movement() {
+        if (player.x + 20 < this.x) {
+            this.sprite.setVelocityX(-50);
+            this.sprite.anims.play("dogWalk", true);
+        } else if (player.x - 20 > this.x) {
+            this.sprite.setVelocityX(50);
+            this.sprite.anims.play("dogWalk", true);
+        } else {
+            this.sprite.setVelocityX(0);
+            this.attack();
+        }
+    }
+    takeDamage() {
+        this.health--;
+        if (this.health <= 0) {
+            die();
+        }
+    }
+    die() {
+        this.disableBody(true, true);
+        this.setActive(false);
+        this.setVisible(false);
+        this.destroy();
+        dogs.splice(index, 1);
     }
 }

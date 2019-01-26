@@ -9,7 +9,7 @@ var config = {
         arcade: {
             debug: true,
             gravity: {
-                y: 900
+                y: 250
             }
         }
     },
@@ -24,34 +24,42 @@ var config = {
 var game = new Phaser.Game(config);
 var player, home, cursors;
 var levelNum = 1;
-
+var dogs = [];
 
 function preload() {
     console.log(this);
     this.load.image("tilesheet", "/assets/tilesheet.png");
     //this.load.image("")
     //ALL TILEMAPS GO HERE
-    this.load.tilemapTiledJSON("1", "/assets/1.json");
+    this.load.tilemapTiledJSON("1", "/assets/01.json");
+
+    //ALL SPRITESHEETS GO HERE
     this.load.spritesheet(
         "player",
         "/assets/CatAnims.png",
         {frameWidth: 44, frameHeight: 54}
     );
-    this.load.spritesheet("sword",
+    this.load.spritesheet(
+        "sword",
         "/assets/Sword.png",
         { frameWidth: 32, frameHeight: 32 }
+    );
+    this.load.spritesheet(
+        "dog",
+        "/assets/Dog.png",
+        {frameWidth: 64, frameHeight: 64 }
     );
 };
 
 function create(){
     var map = createTilemap.call(this, levelNum);
     createCamera.call(this, map);
-    createCollision.call(this, map);
     swordAnimation.call(this);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     //player setup controls and collision
     createKeys.call(this);
     player.animations();
+    loadDogAnimations.call(this);
     this.input.keyboard.on("keydown_SPACE", player.swipe, this);   
     //this.physics.add.overlap(player.sprite, home, endOfLevel, null, this);
     //create groups
@@ -59,10 +67,13 @@ function create(){
         defaultKey: "sword",
         maxSize: 1
     });
+    console.log(dogs);
 }
 function update() {
-    player.update();
     player.movement();
+    for (var i = 0; i < dogs.length; i++) {
+        dogs[i].update();
+    }
 }
 
 //NON-PHASER FUNCTIONS
@@ -88,4 +99,26 @@ function killSword(sword) {
     sword.disableBody(true, true);
     sword.setActive(false);
     sword.setVisible(false);
+}
+//OTHER
+function loadDogAnimations() {
+    this.anims.create({
+        key: "dogIdle",
+        frames: this.anims.generateFrameNumbers("dog", { start: 0, end: 2 }),
+        frameRate: 3,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "dogWalk",
+        frames: this.anims.generateFrameNumbers("dog", { start: 3, end: 4 }),
+        frameRate: 3
+    });
+    this.anims.create({
+        key: "dogAttack",
+        frames: this.anims.generateFrameNumbers("dog", { start: 5, end: 7 }),
+        frameRate: 3
+    })
+}
+function dogDamagedListener(sword, dog) {
+    dog.takeDamage();
 }
