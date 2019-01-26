@@ -59,14 +59,38 @@
         {
          "draworder":"topdown",
          "name":"object",
-         "objects":[],
+         "objects":[
+                {
+                 "height":0,
+                 "id":3,
+                 "name":"player",
+                 "point":true,
+                 "rotation":0,
+                 "type":"player",
+                 "visible":true,
+                 "width":0,
+                 "x":284.666666666667,
+                 "y":2554.66666666667
+                }, 
+                {
+                 "height":0,
+                 "id":4,
+                 "name":"home",
+                 "point":true,
+                 "rotation":0,
+                 "type":"home",
+                 "visible":true,
+                 "width":0,
+                 "x":9506.66666666667,
+                 "y":2816.66666666667
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
          "x":0,
          "y":0
         }],
- "nextobjectid":1,
+ "nextobjectid":5,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.1.6",
