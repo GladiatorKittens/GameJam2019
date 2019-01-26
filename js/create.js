@@ -2,7 +2,7 @@ function createTilemap(mapKey) {
     var map = this.make.tilemap({ key: mapKey });
     var tileSet = map.addTilesetImage("tilesheet", "tilesheet");
     //create layers
-    map.createStaticLayer("sky", tileSet, 0, 0);
+    //map.createStaticLayer("sky", tileSet, 0, 0);
     map.createStaticLayer("parallax", tileSet, 0, 0).setScrollFactor(0.2, 1);
     map.createStaticLayer("background", tileSet, 0, 0);
     map.createStaticLayer("background+", tileSet, 0, 0);
@@ -20,7 +20,9 @@ function createTilemap(mapKey) {
     //player setup
     createPlayer.call(this, playerSpawn);
 
-    
+    //sounds
+    sfx.jump = this.sound.add('jump');
+    sfx.step = this.sound.add('step', { loop: false, volume: 0.15 });
 
     //create any spawned in point things
     var enemySpawns = [];

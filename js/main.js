@@ -25,6 +25,7 @@ var game = new Phaser.Game(config);
 var player, home, cursors;
 var levelNum = 1;
 var dogs = [];
+sfx = {};
 
 function preload() {
     console.log(this);
@@ -49,6 +50,9 @@ function preload() {
         "/assets/Dog.png",
         {frameWidth: 64, frameHeight: 64 }
     );
+    //sounds
+    this.load.audio('jump', 'assets/sounds/jump_short.wav');
+    this.load.audio('step', 'assets/sounds/step_little.wav');
 };
 
 function create(){
@@ -60,7 +64,7 @@ function create(){
     createKeys.call(this);
     player.animations();
     loadDogAnimations.call(this);
-    this.input.keyboard.on("keydown_SPACE", player.swipe, this);   
+    this.input.keyboard.on("keydown_SPACE", player.swipe, this);
     //this.physics.add.overlap(player.sprite, home, endOfLevel, null, this);
     //create groups
     playerSword = this.physics.add.group({
@@ -92,6 +96,8 @@ function onCompleteEvent(animation, frame, gameObject) {
     gameObject.destroy();
 }
 function onUpdateEvent(animation, frame, gameObject) {
+    sfx.step.setDetune(Phaser.Math.Between(-100, 100));
+    sfx.step.play();
     gameObject.x = player.x + (30 * player.flip);
     gameObject.y = player.y;
 }

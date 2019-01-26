@@ -10,6 +10,7 @@ class Player {
         this.jumpCount = 0;
         this.maxJump = 2;
         this.flip = 1;
+        this.grounded = true;
     }
     swipe() {
         var sword = playerSword.get(player.x + 30 * player.flip, player.y);
@@ -21,7 +22,7 @@ class Player {
             sword.setGravityY(-200);
             if (player.flip == -1) {
                 sword.flipX = true;
-            } 
+            }
             //TODO - put colliders for various things here
             if (dogs.length > 0) {
                 for (var i = 0; i < dogs.length; i++) {
@@ -37,8 +38,8 @@ class Player {
     animations() {
         this.scene.anims.create({
             key: "walk",
-            frames: this.scene.anims.generateFrameNumbers("player", { start: 0, end: 5 }),
-            frameRate: 5,
+            frames: this.scene.anims.generateFrameNumbers("player", { start: 0, end: 3 }),
+            frameRate: 7,
             repeat: -1
         });
         this.scene.anims.create({
@@ -49,18 +50,24 @@ class Player {
         });
         this.scene.anims.create({
             key: "jump",
-            frames: this.scene.anims.generateFrameNumbers("player", { start: 5, end: 6 }),
-            frameRate: 5,
-            repeat: -1
+            frames: this.scene.anims.generateFrameNumbers("player", { start: 6, end: 8 }),
+            frameRate: 1,
+            repeat: 1
+        });
+        this.scene.anims.create({
+            key: "jump2",
+            frames: this.scene.anims.generateFrameNumbers("player", { start: 7, end: 8 }),
+            frameRate: 1,
+            repeat: 1
         });
         this.scene.anims.create({
             key: "down",
-            frames: [{ key: "player", frames: 8 }],
+            frames: this.scene.anims.generateFrameNumbers("player", { start: 6, end: 6 }),
             frameRate: 5
         });
         this.scene.anims.create({
             key: "fall",
-            frames: [{ key: "player", frames: 8 }],
+            frames: this.scene.anims.generateFrameNumbers("player", { start: 8, end: 8 }),
             frameRate: 5
         });
     }
@@ -68,14 +75,18 @@ class Player {
         //Right
         if (cursors.right.isDown) {
             this.sprite.setVelocityX(150);
-            this.sprite.anims.play("walk", true);
+            if (this.grounded) {
+              this.sprite.anims.play("walk", true);
+            }
             this.sprite.flipX = false;
             this.flip = 1;
         }
         //Left
         else if (cursors.left.isDown) {
             this.sprite.setVelocityX(-150);
-            this.sprite.anims.play("walk", true);
+            if (this.grounded) {
+              this.sprite.anims.play("walk", true);
+            }
             this.sprite.flipX = true;
             this.flip = -1;
         }
@@ -94,16 +105,20 @@ class Player {
         }
 
         if (this.sprite.body.blocked.down) {
+          this.grounded = true;
             this.jumpCount = 0;
+        } else {
+          this.grounded = false;
         }
         //Jump
         if (Phaser.Input.Keyboard.JustDown(cursors.up) && this.jumpCount < this.maxJump) {
             this.jumpCount++;
             this.sprite.setVelocityY(-290);
-            this.sprite.anims.play("jump", true);
+            this.sprite.anims.play("jump",true);
+            sfx.jump.play();
         }
-        if (this.sprite.body.velocity.y < 0) {
-            this.sprite.anims.play("jump", true);
+        if (this.sprite.body.velocity.y < -50) {
+            this.sprite.anims.play("jump2",true);
         } else if (this.sprite.body.velocity.y > 0) {
             this.sprite.anims.play("fall", true);
         }
