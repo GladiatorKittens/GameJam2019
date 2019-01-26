@@ -29,12 +29,12 @@ function createTilemap(mapKey) {
             enemySpawns.push(object);
         }
     })
-    console.log(enemySpawns)
     createEnemies.call(this, enemySpawns);
     //TODO - here is where you add colliders
     this.physics.add.collider(player.sprite, collisionlayer);
     for (var i = 0; i < dogs.length; i++) {
         this.physics.add.collider(dogs[i].sprite, collisionlayer);
+        this.physics.add.overlap(dogs[i].sprite, player.sprite, dogs[i].attackCheck, null, this);
     }
     //create foreground that displays on top
    // map.createStaticLayer("fg1", tileSet, 0, 0);
@@ -51,6 +51,7 @@ function createEnemies(enemySpawns) {
             case "dog":
                 var dog = new Dog(this, enemySpawns[i].x, enemySpawns[i].y, "dog");
                 this.physics.add.overlap(player.sprite, dog, dog.attack, null, this);
+                dog.sprite.setSize(64, 54, true);
                 dogs.push(dog);
             break
         }

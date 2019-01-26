@@ -10,10 +10,12 @@ class Player {
         this.jumpCount = 0;
         this.maxJump = 2;
         this.flip = 1;
+        this.sprite.setSize(34, 54, true);
     }
     swipe() {
         var sword = playerSword.get(player.x + 30 * player.flip, player.y);
         if (sword) {
+            swordActive = true;
             sword.setDepth(100); //TODO - tweak to what is appropriate
             sword.enableBody(false);
             sword.setActive(true);
@@ -25,7 +27,7 @@ class Player {
             //TODO - put colliders for various things here
             if (dogs.length > 0) {
                 for (var i = 0; i < dogs.length; i++) {
-                    this.scene.scene.physics.add.collider(sword, dogs[i], dogDamagedListener, null, this);
+                    this.scene.physics.add.collider(sword, dogs[i].sprite, dogDamagedListener, null, this);                    
                 }
             }
             //scene.physics.add.collider(sword, Enemies, killEnemy, null, this);
@@ -84,7 +86,7 @@ class Player {
             this.sprite.setVelocityX(0);
             this.sprite.anims.play("down", true);
         }
-        else if (cursors.space.isDown) {
+        else if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
             this.swipe();
         }
         //Idle
@@ -113,8 +115,9 @@ class Player {
     }
     takeDamage() {
         this.currentLivesUsed++
-        if (this.lives == this.currentLivesUsed) {
-            gameOver();
+        console.log(this.currentLivesUsed)
+        if (this.lives === this.currentLivesUsed) {
+            this.gameOver();
         }
     }
     gameOver() {
@@ -133,6 +136,9 @@ class Dog {
         this.health = 2;
         this.sprite = this.scene.physics.add.sprite(x, y, texture, 1);
         this.detectedEnemy = false;
+        this.state = dogState.IDLE;
+        this.lastAttackTime = 0;
+
     }
     detect() {
         if (Phaser.Math.Distance.Between(player.x, player.y, this.x, this.y) < 320) {
@@ -143,40 +149,70 @@ class Dog {
         }
     }
     update() {
+        this.detect();
         if (this.detectedEnemy === false) {
             this.sprite.anims.play("dogIdle", true);
+            this.state = dogState.IDLE;
         } else {
             this.movement();
+            this.state = dogState.TRACK;
         }
         this.x = this.sprite.x;
         this.y = this.sprite.y;
     }
     attack() {
-        this.sprite.anims.play("dogAttack", true);
+        var time = new Date();
+        time = time.getTime();
+
+        //is attk on CD?
+
+        var time_diff = time - this.lastAttackTime;
+        if (this.state == dogState.ATTACK) return;
+
+        if (time_diff > 5000) {
+            this.lastAttackTime = time;
+            this.sprite.anims.play("dogAttack", true);
+            this.state = dogState.ATTACK;
+            this.sprite.on("animationcomplete", this.attackComplete);
+        }
+    }
+    attackCheck() {
+        if (this.state === dogState.ATTACK) {
+            player.takeDamage();
+            console.log("bitch lasagna")
+            this.state = dogState.TRACK;
+        }
+    }
+    attackComplete(animation, frame, gameObject) {  
+        this.state = dogState.TRACK;
+        var time = new Date();
+        time = time.getTime();
+        this.lastAttackTime = time;
+        player.takeDamage();
+        this.anims.play("dogIdle", true);
     }
     movement() {
-        if (player.x + 20 < this.x) {
+        if (player.x + 40 < this.x) {
             this.sprite.setVelocityX(-50);
             this.sprite.anims.play("dogWalk", true);
+            this.sprite.flipX= true;
         } else if (player.x - 20 > this.x) {
             this.sprite.setVelocityX(50);
             this.sprite.anims.play("dogWalk", true);
+            this.sprite.flipX= false;
         } else {
             this.sprite.setVelocityX(0);
             this.attack();
         }
     }
-    takeDamage() {
+    takeDamage(i) {
         this.health--;
         if (this.health <= 0) {
-            die();
+            this.die(i);
         }
     }
-    die() {
-        this.disableBody(true, true);
-        this.setActive(false);
-        this.setVisible(false);
-        this.destroy();
-        dogs.splice(index, 1);
+    die(i) {
+        this.sprite.destroy();
+        dogs.splice(i, 1);
     }
 }

@@ -25,6 +25,12 @@ var game = new Phaser.Game(config);
 var player, home, cursors;
 var levelNum = 1;
 var dogs = [];
+var swordActive = true;
+const dogState = {
+    IDLE: "0",
+    TRACK: "1",
+    ATTACK: "2"
+}
 
 function preload() {
     console.log(this);
@@ -47,7 +53,7 @@ function preload() {
     this.load.spritesheet(
         "dog",
         "/assets/Dog.png",
-        {frameWidth: 64, frameHeight: 64 }
+        {frameWidth: 64, frameHeight: 52 }
     );
 };
 
@@ -60,14 +66,13 @@ function create(){
     createKeys.call(this);
     player.animations();
     loadDogAnimations.call(this);
-    this.input.keyboard.on("keydown_SPACE", player.swipe, this);   
+
     //this.physics.add.overlap(player.sprite, home, endOfLevel, null, this);
     //create groups
     playerSword = this.physics.add.group({
         defaultKey: "sword",
         maxSize: 1
     });
-    console.log(dogs);
 }
 function update() {
     player.movement();
@@ -78,7 +83,7 @@ function update() {
 
 //NON-PHASER FUNCTIONS
 function endOfLevel(levelKey){
-    createTilemap(levelKey)
+    createTilemap(levelKey);
 }
 //SWORD FUNCTIONS
 function swordAnimation(){
@@ -116,9 +121,18 @@ function loadDogAnimations() {
     this.anims.create({
         key: "dogAttack",
         frames: this.anims.generateFrameNumbers("dog", { start: 5, end: 7 }),
-        frameRate: 3
+        frameRate: 3,
+        yoyo: true
     })
 }
 function dogDamagedListener(sword, dog) {
-    dog.takeDamage();
+    if (swordActive == true) {
+        for (var i = 0; i < dogs.length; i++) {
+            if (dogs[i].sprite === dog) {
+                dogs[i].takeDamage(i);
+                swordActive = false;
+            }
+        }
+    }
+    //dog.takeDamage();
 }
