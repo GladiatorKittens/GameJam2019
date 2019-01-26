@@ -1,12 +1,12 @@
 // JavaScript source code
 class Player {
-    constructor(scene, x, y, texture) {
+    constructor(scene, x, y,lives, texture) {
         this.scene = scene;
         this.x = x;
         this.y = y;
         this.sprite = this.scene.physics.add.sprite(x, y, texture, 1);
         this.lives = 9;
-        this.currentLivesUsed = 0;
+        this.currentLivesUsed = lives;
         this.jumpCount = 0;
         this.maxJump = 2;
         this.flip = 1;
@@ -197,6 +197,7 @@ class Dog {
             this.sprite.anims.play("dogWalk", true);
             this.sprite.flipX= false;
         } else {
+            //TODO - check if y values are similar
             this.sprite.setVelocityX(0);
             this.attack();
         }

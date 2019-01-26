@@ -22,7 +22,7 @@ var config = {
 };
 //Any global variable declarations go here
 var game = new Phaser.Game(config);
-var player, home, cursors;
+var player, home, map, cursors;
 var levelNum = 1;
 var dogs = [];
 var swordActive = true;
@@ -35,10 +35,12 @@ const dogState = {
 function preload() {
     console.log(this);
     this.load.image("tilesheet", "/assets/tilesheet.png");
-    //this.load.image("")
+    this.load.image("objectsheet", "assets/objects.png");
+    this.load.image("home", "/assets/sign.png");
     //ALL TILEMAPS GO HERE
     this.load.tilemapTiledJSON("1", "/assets/01.json");
-
+    this.load.tilemapTiledJSON("1", "/assets/02.json");
+    this.load.tilemapTiledJSON("1", "/assets/03.json");
     //ALL SPRITESHEETS GO HERE
     this.load.spritesheet(
         "player",
@@ -58,7 +60,7 @@ function preload() {
 };
 
 function create(){
-    var map = createTilemap.call(this, levelNum);
+    var map = createTilemap.call(this, levelNum, 0);
     createCamera.call(this, map);
     swordAnimation.call(this);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -135,4 +137,9 @@ function dogDamagedListener(sword, dog) {
         }
     }
     //dog.takeDamage();
+}
+function nextLevel(home, player) {
+    levelNum++
+    var tempLives = player.currentLivesUsed;
+    map = createTilemap.call(this, levelNum, tempLives);
 }
