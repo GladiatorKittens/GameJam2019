@@ -176,20 +176,16 @@ class Dog {
             this.sprite.on("animationcomplete", this.attackComplete);
         }
     }
-    attackCheck() {
-        if (this.state === dogState.ATTACK) {
-            player.takeDamage();
-            console.log("bitch lasagna")
-            this.state = dogState.TRACK;
-        }
-    }
+    attackCheck() {}
     attackComplete(animation, frame, gameObject) {  
-        this.state = dogState.TRACK;
-        var time = new Date();
-        time = time.getTime();
-        this.lastAttackTime = time;
-        player.takeDamage();
-        this.anims.play("dogIdle", true);
+        if (animation.key == "dogAttack") {
+            this.state = dogState.TRACK;
+            var time = new Date();
+            time = time.getTime();
+            this.lastAttackTime = time;
+            player.takeDamage();
+            this.anims.play("dogIdle", true);
+        }
     }
     movement() {
         if (player.x + 40 < this.x) {
