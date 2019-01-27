@@ -184,7 +184,3 @@ function createSpeechBubble(x, y, width, height, quote) {
     var b = content.getBounds();
     content.setPosition(bubble.x + (width / 2) - (b.width / 2), bubble.y + (height / 2) - (b.height / 2));
 }
-=======
-    var tempLives = player.currentLivesUsed;
-    map = createTilemap.call(this, levelNum, tempLives);
-}
