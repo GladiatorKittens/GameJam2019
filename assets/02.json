@@ -83,6 +83,54 @@
                  "width":0,
                  "x":9417.33333333333,
                  "y":1338
+                }, 
+                {
+                 "height":0,
+                 "id":3,
+                 "name":"dog1",
+                 "point":true,
+                 "rotation":0,
+                 "type":"dog",
+                 "visible":true,
+                 "width":0,
+                 "x":4062.66666666667,
+                 "y":3002.66666666667
+                }, 
+                {
+                 "height":0,
+                 "id":4,
+                 "name":"dog2",
+                 "point":true,
+                 "rotation":0,
+                 "type":"dog",
+                 "visible":true,
+                 "width":0,
+                 "x":5062.66666666667,
+                 "y":2966.66666666667
+                }, 
+                {
+                 "height":0,
+                 "id":5,
+                 "name":"dog3",
+                 "point":true,
+                 "rotation":0,
+                 "type":"dog",
+                 "visible":true,
+                 "width":0,
+                 "x":8166.66666666667,
+                 "y":2140
+                }, 
+                {
+                 "height":0,
+                 "id":6,
+                 "name":"I wonder what my family is doing right now",
+                 "point":true,
+                 "rotation":0,
+                 "type":"speech",
+                 "visible":true,
+                 "width":0,
+                 "x":1348,
+                 "y":690
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -90,7 +138,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":3,
+ "nextobjectid":7,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.1.6",
