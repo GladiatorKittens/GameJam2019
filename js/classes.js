@@ -16,7 +16,7 @@ class Player {
         var sword = playerSword.get(player.x + 30 * player.flip, player.y);
         if (sword) {
             swordActive = true;
-            sword.setDepth(100); //TODO - tweak to what is appropriate
+            sword.setDepth(100);
             sword.enableBody(false);
             sword.setActive(true);
             sword.setVisible(true);
@@ -24,7 +24,7 @@ class Player {
             if (player.flip == -1) {
                 sword.flipX = true;
             }
-            //TODO - put colliders for various things here
+            //put colliders for various things here
             if (dogs.length > 0) {
                 for (var i = 0; i < dogs.length; i++) {
                     this.scene.physics.add.collider(sword, dogs[i].sprite, dogDamagedListener, null, this);
@@ -147,6 +147,8 @@ class Dog {
         this.detectedEnemy = false;
         this.state = dogState.IDLE;
         this.lastAttackTime = 0;
+        this.overlappedPlayer = false;
+        this.sprite.on("animationcomplete", this.attackComplete);
     }
     detect() {
         if (Phaser.Math.Distance.Between(player.x, player.y, this.x, this.y) < 320) {
@@ -154,6 +156,11 @@ class Dog {
             this.movement();
         } else {
             this.detectedEnemy = false;
+        }
+        if (Phaser.Math.Distance.Between(player.x, player.y, this.x, this.y) > 80) {
+            this.overlappedPlayer = false;
+        } else {
+            this.overlappedPlayer = true;
         }
     }
     update() {
@@ -172,19 +179,20 @@ class Dog {
         var time = new Date();
         time = time.getTime();
 
-        //is attk on CD?
+        //is attack on CD?
 
         var time_diff = time - this.lastAttackTime;
         if (this.state == dogState.ATTACK) return;
 
-        if (time_diff > 5000) {
+        if (time_diff > 5000 && this.overlappedPlayer) {
             this.lastAttackTime = time;
             this.sprite.anims.play("dogAttack", true);
             this.state = dogState.ATTACK;
-            this.sprite.on("animationcomplete", this.attackComplete);
         }
     }
-    attackCheck() { }
+    attackCheck() {
+        this.overlappedPlayer = true;
+    }
     attackComplete(animation, frame, gameObject) {  
         if (animation.key == "dogAttack") {
             this.state = dogState.TRACK;
@@ -205,7 +213,6 @@ class Dog {
             this.sprite.anims.play("dogWalk", true);
             this.sprite.flipX = false;
         } else {
-            //TODO - check if y values are similar
             this.sprite.setVelocityX(0);
             this.attack();
         }
