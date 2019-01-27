@@ -1,8 +1,8 @@
 
 var config = {
     type: Phaser.AUTO,
-    width: 640,
-    height: 640,
+    width: 1920,
+    height: 1080,
     physics: {
         default: "arcade",
         arcade: {
@@ -27,6 +27,7 @@ var dogs = [];
 var swordActive = true;
 var tempLives = 0;
 var maxLevel = 4;
+sfx = {};
 const dogState = {
     IDLE: "0",
     TRACK: "1",
@@ -39,6 +40,7 @@ function preload() {
     this.load.image("objectsheet", "assets/objects.png");
     this.load.image("home", "/assets/sign.png");
     this.load.image("sky", "/assets/sky.png");
+    this.load.spritesheet("dust", "/assets/dust.png",{frameWidth:32,frameHeight:32});
     //ALL TILEMAPS GO HERE
     this.load.tilemapTiledJSON("1", "/assets/01.json");
     this.load.tilemapTiledJSON("2", "/assets/02.json");
@@ -60,6 +62,12 @@ function preload() {
         "/assets/Dog.png",
         {frameWidth: 64, frameHeight: 52 }
     );
+    //SOUND
+    this.load.audio('jump', 'assets/sounds/jump_short.wav');
+    this.load.audio('step', 'assets/sounds/step_little.wav');
+    this.load.audio('bark', 'assets/sounds/bark.wav');
+    this.load.audio('sword', 'assets/sounds/sword.wav');
+
 };
 
 function create(){
@@ -80,9 +88,28 @@ function create(){
         defaultKey: "sword",
         maxSize: 1
     });
+    //createEmitter
+    var particles = this.add.particles('dust');
+
+    emitter = particles.createEmitter({
+        x: 100,
+        y: 100,
+        frame: 0,
+        quantity: 5,
+        frequency: 140,
+        angle: { min: -180, max: 0 },
+        speed: 20,
+        scale: { start: 0.3, end: 0.0 },
+        gravityY: 0,
+        lifespan: { min: 100, max: 500 }
+    });
+
+    emitter.setBlendMode(Phaser.BlendModes.ADD);
 }
 function update() {
+
     player.movement();
+    emitter.setPosition(player.sprite.x, player.sprite.y + 25);
     for (var i = 0; i < dogs.length; i++) {
         dogs[i].update();
     }
@@ -106,6 +133,7 @@ function onCompleteEvent(animation, frame, gameObject) {
 function onUpdateEvent(animation, frame, gameObject) {
     gameObject.x = player.x + (30 * player.flip);
     gameObject.y = player.y;
+
 }
 function killSword(sword) {
     sword.disableBody(true, true);
