@@ -39,8 +39,8 @@ class Player {
     animations() {
         this.scene.anims.create({
             key: "walk",
-            frames: this.scene.anims.generateFrameNumbers("player", { start: 0, end: 5 }),
-            frameRate: 5,
+            frames: this.scene.anims.generateFrameNumbers("player", { start: 0, end: 3 }),
+            frameRate: 7,
             repeat: -1
         });
         this.scene.anims.create({
@@ -51,50 +51,59 @@ class Player {
         });
         this.scene.anims.create({
             key: "jump",
-            frames: this.scene.anims.generateFrameNumbers("player", { start: 5, end: 6 }),
+            frames: this.scene.anims.generateFrameNumbers("player", { frames:[6] }),
             frameRate: 5,
-            repeat: -1
+            repeat: 0
         });
+        this.scene.anims.create({
+            key: "jump2",
+            frames: this.scene.anims.generateFrameNumbers("player", { frames: [7] }),
+            frameRate: 5,
+            repeat: 0
+        })
         this.scene.anims.create({
             key: "down",
             frames: [{ key: "player", frames: 8 }],
-            frameRate: 5
+            frameRate: 0
         });
         this.scene.anims.create({
             key: "fall",
             frames: [{ key: "player", frames: 8 }],
-            frameRate: 5
+            frameRate: 0
         });
     }
     movement() {
         //Right
         if (cursors.right.isDown) {
             this.sprite.setVelocityX(150);
-            this.sprite.anims.play("walk", true);
             this.sprite.flipX = false;
             this.flip = 1;
+            if (this.sprite.body.blocked.down) {
+                this.sprite.anims.play("walk", true);
+            }
         }
         //Left
         else if (cursors.left.isDown) {
             this.sprite.setVelocityX(-150);
-            this.sprite.anims.play("walk", true);
             this.sprite.flipX = true;
             this.flip = -1;
+            if (this.sprite.body.blocked.down) {
+                this.sprite.anims.play("walk", true);
+            }
         }
         //Down
         else if (cursors.down.isDown) {
             this.sprite.setVelocityX(0);
             this.sprite.anims.play("down", true);
         }
-        else if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
-            this.swipe();
-        }
         //Idle
         else {
             this.sprite.setVelocityX(0);
             this.sprite.anims.play("idle", true);
         }
-
+        if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
+            this.swipe();
+        }
         if (this.sprite.body.blocked.down) {
             this.jumpCount = 0;
         }
@@ -104,8 +113,8 @@ class Player {
             this.sprite.setVelocityY(-290);
             this.sprite.anims.play("jump", true);
         }
-        if (this.sprite.body.velocity.y < 0) {
-            this.sprite.anims.play("jump", true);
+        if (this.sprite.body.velocity.y < -60) {
+            this.sprite.anims.play("jump2", true);
         } else if (this.sprite.body.velocity.y > 0) {
             this.sprite.anims.play("fall", true);
         }
@@ -138,7 +147,6 @@ class Dog {
         this.detectedEnemy = false;
         this.state = dogState.IDLE;
         this.lastAttackTime = 0;
-
     }
     detect() {
         if (Phaser.Math.Distance.Between(player.x, player.y, this.x, this.y) < 320) {
@@ -176,7 +184,7 @@ class Dog {
             this.sprite.on("animationcomplete", this.attackComplete);
         }
     }
-    attackCheck() {}
+    attackCheck() { }
     attackComplete(animation, frame, gameObject) {  
         if (animation.key == "dogAttack") {
             this.state = dogState.TRACK;
@@ -191,11 +199,11 @@ class Dog {
         if (player.x + 40 < this.x) {
             this.sprite.setVelocityX(-50);
             this.sprite.anims.play("dogWalk", true);
-            this.sprite.flipX= true;
+            this.sprite.flipX = true;  
         } else if (player.x - 20 > this.x) {
             this.sprite.setVelocityX(50);
             this.sprite.anims.play("dogWalk", true);
-            this.sprite.flipX= false;
+            this.sprite.flipX = false;
         } else {
             //TODO - check if y values are similar
             this.sprite.setVelocityX(0);
