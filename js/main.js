@@ -1,4 +1,3 @@
-//TODO - finish createTilemap function
 
 var config = {
     type: Phaser.AUTO,
@@ -7,7 +6,7 @@ var config = {
     physics: {
         default: "arcade",
         arcade: {
-            debug: true,
+            debug: false,
             gravity: {
                 y: 250
             }
@@ -27,6 +26,7 @@ var levelNum = 1;
 var dogs = [];
 var swordActive = true;
 var tempLives = 0;
+var maxLevel = 4;
 const dogState = {
     IDLE: "0",
     TRACK: "1",
@@ -43,6 +43,7 @@ function preload() {
     this.load.tilemapTiledJSON("1", "/assets/01.json");
     this.load.tilemapTiledJSON("2", "/assets/02.json");
     this.load.tilemapTiledJSON("3", "/assets/03.json");
+    this.load.tilemapTiledJSON("4", "/assets/04.json");
     //ALL SPRITESHEETS GO HERE
     this.load.spritesheet(
         "player",
@@ -64,13 +65,15 @@ function preload() {
 function create(){
     var map = createTilemap.call(this, levelNum, tempLives);
     createCamera.call(this, map);
-    swordAnimation.call(this);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     //player setup controls and collision
     createKeys.call(this);
-    player.animations();
-    loadDogAnimations.call(this);
-
+    if (levelNum == 1) {
+        alert("use the arrow keys to move and space to attack!");
+        player.animations();
+        loadDogAnimations.call(this);
+        swordAnimation.call(this);
+    }
     //this.physics.add.overlap(player.sprite, home, endOfLevel, null, this);
     //create groups
     playerSword = this.physics.add.group({
@@ -144,11 +147,19 @@ function nextLevel(home, player) {
     for (var i = 0; i < dogs.length; i++) {
         dogs[i].die(i);
     }
-    home.destroy();
-    levelNum++
-    tempLives = player.currentLivesUsed;
-    player.destroy();
-    create.call(this);
+    if (maxLevel <= levelNum) {
+        console.log("you finished!");
+        this.scene.input.enabled = false;
+        this.scene.physics.pause();
+        alert("thanks for playing!");
+    } else {
+        home.destroy();
+        levelNum++
+        tempLives = player.currentLivesUsed;
+        player.destroy();
+        create.call(this);
+    }
+
 }
 function createSpeechBubble(x, y, width, height, quote) {
     var padding = 10;

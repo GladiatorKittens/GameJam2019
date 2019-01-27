@@ -46,7 +46,7 @@ function createTilemap(levelNum, lives) {
             speechSpawns.push(object);
         }
     })
-    //TODO - here is where you add colliders
+    //here is where you add colliders
     this.physics.add.collider(player.sprite, collisionlayer);
     for (var i = 0; i < dogs.length; i++) {
         this.physics.add.collider(dogs[i].sprite, collisionlayer);
@@ -64,27 +64,6 @@ function createTilemap(levelNum, lives) {
    // map.createStaticLayer("fg2", tileSet, 0, 0);
     return map;
 }
-function createEmitter(){
-  //particles
-    var particles = this.add.particles('smokeBall');
-
-    emitter = particles.createEmitter({
-        x: 100,
-        y: 100,
-        frame: 0,
-        quantity: 5,
-        frequency: 140,
-        angle: { min: -180, max: 0 },
-        speed: 20,
-        scale: { start: 0.3, end: 0.0 },
-        gravityY: 0,
-        lifespan: { min: 100, max: 500 }
-    });
-
-
-    //emitter.setSpeed(200);
-    emitter.setBlendMode(Phaser.BlendModes.ADD);
-}
 function createPlayer(playerSpawn, lives) {
     player = new Player(this, playerSpawn.x, playerSpawn.y,lives, "player");
     player.sprite.setCollideWorldBounds(true);
@@ -95,7 +74,7 @@ function createEnemies(enemySpawns) {
         switch (enemySpawns[i].type) {
             case "dog":
                 var dog = new Dog(this, enemySpawns[i].x, enemySpawns[i].y, "dog");
-                this.physics.add.overlap(player.sprite, dog, dog.attack, null, this);
+                this.physics.add.overlap(player.sprite, dog, dog.attack, null, dog);
                 dog.sprite.setSize(64, 54, true);
                 dogs.push(dog);
             break
