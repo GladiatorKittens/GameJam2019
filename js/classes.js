@@ -23,11 +23,11 @@ class Player {
             sword.setGravityY(-200);
             if (player.flip == -1) {
                 sword.flipX = true;
-            } 
+            }
             //TODO - put colliders for various things here
             if (dogs.length > 0) {
                 for (var i = 0; i < dogs.length; i++) {
-                    this.scene.physics.add.collider(sword, dogs[i].sprite, dogDamagedListener, null, this);                    
+                    this.scene.physics.add.collider(sword, dogs[i].sprite, dogDamagedListener, null, this);
                 }
             }
             //scene.physics.add.collider(sword, Enemies, killEnemy, null, this);
@@ -57,10 +57,10 @@ class Player {
         });
         this.scene.anims.create({
             key: "jump2",
-            frames: this.scene.anims.generateFrameNumbers("player", { frames: [7] }),
+            frames: this.scene.anims.generateFrameNumbers("player", { frames:[7] }),
             frameRate: 5,
             repeat: 0
-        })
+        });
         this.scene.anims.create({
             key: "down",
             frames: [{ key: "player", frames: 8 }],
@@ -79,7 +79,7 @@ class Player {
             this.sprite.flipX = false;
             this.flip = 1;
             if (this.sprite.body.blocked.down) {
-                this.sprite.anims.play("walk", true);
+              this.sprite.anims.play("walk", true);
             }
         }
         //Left
@@ -88,7 +88,7 @@ class Player {
             this.sprite.flipX = true;
             this.flip = -1;
             if (this.sprite.body.blocked.down) {
-                this.sprite.anims.play("walk", true);
+              this.sprite.anims.play("walk", true);
             }
         }
         //Down
