@@ -4,7 +4,7 @@ function createTilemap(levelNum, lives) {
     var objectSet = map.addTilesetImage("objectsheet", "objectsheet");
     //create layers
     //map.createStaticLayer("sky", [tileSet, objectSet], 0, 0);
-    this.add.image(0, 0, "sky").setScale(10).setScrollFactor(0);
+    this.add.image(0, 0, "sky").setScale(20).setScrollFactor(0);
     map.createStaticLayer("parallax", [tileSet, objectSet], 0, 0).setScrollFactor(0.2, 1);
     map.createStaticLayer("background", [tileSet, objectSet], 0, 0);
     map.createStaticLayer("background+", [tileSet, objectSet], 0, 0);
@@ -22,7 +22,11 @@ function createTilemap(levelNum, lives) {
     //player setup
     createPlayer.call(this, playerSpawn,lives);
 
-
+    //sounds
+    sfx.jump = this.sound.add('jump');
+    sfx.step = this.sound.add('step', { loop: false, volume: 0.15 });
+    sfx.bark = this.sound.add('bark');
+    sfx.sword = this.sound.add('sword');
 
     //create any spawned in point things
     var enemySpawns = [];
@@ -89,7 +93,7 @@ function createCamera(map) {
 }
 function createEmitter() {
     //particles
-    var particles = this.add.particles('smokeBall');
+    var particles = this.add.particles('dust');
 
     emitter = particles.createEmitter({
         x: 100,

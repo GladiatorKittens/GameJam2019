@@ -15,6 +15,7 @@ class Player {
     swipe() {
         var sword = playerSword.get(player.x + 30 * player.flip, player.y);
         if (sword) {
+            sfx.sword.play();
             swordActive = true;
             sword.setDepth(100);
             sword.enableBody(false);
@@ -68,7 +69,7 @@ class Player {
         });
         this.scene.anims.create({
             key: "fall",
-            frames: [{ key: "player", frames: 8 }],
+            frames: this.scene.anims.generateFrameNumbers("player", { frames:[8] }),
             frameRate: 0
         });
     }
@@ -80,6 +81,14 @@ class Player {
             this.flip = 1;
             if (this.sprite.body.blocked.down) {
               this.sprite.anims.play("walk", true);
+              if (!emitter.on) {
+                emitter.start();
+              }
+
+              if (!sfx.step.isPlaying) {
+                sfx.step.setDetune(Phaser.Math.Between(-100, 100));
+                sfx.step.play();
+              }
             }
         }
         //Left
@@ -89,6 +98,14 @@ class Player {
             this.flip = -1;
             if (this.sprite.body.blocked.down) {
               this.sprite.anims.play("walk", true);
+              if (!emitter.on) {
+                emitter.start();
+              }
+              if (!sfx.step.isPlaying) {
+                sfx.step.setDetune(Phaser.Math.Between(-100, 100));
+                sfx.step.play();
+              }
+
             }
         }
         //Down
@@ -97,9 +114,10 @@ class Player {
             this.sprite.anims.play("down", true);
         }
         //Idle
-        else {
+        else if (this.sprite.body.blocked.down) {
             this.sprite.setVelocityX(0);
             this.sprite.anims.play("idle", true);
+            emitter.stop();
         }
         if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
             this.swipe();
@@ -112,11 +130,16 @@ class Player {
             this.jumpCount++;
             this.sprite.setVelocityY(-290);
             this.sprite.anims.play("jump", true);
+            sfx.jump.setDetune(Phaser.Math.Between(-100, 100));
+            sfx.jump.play();
+            emitter.start();
         }
         if (this.sprite.body.velocity.y < -60) {
             this.sprite.anims.play("jump2", true);
+            //emitter.stop();
         } else if (this.sprite.body.velocity.y > 0) {
             this.sprite.anims.play("fall", true);
+            emitter.stop();
         }
         //set the values for the sword to follow
         this.x = this.sprite.x;
@@ -187,14 +210,17 @@ class Dog {
         if (time_diff > 5000 && this.overlappedPlayer) {
             this.lastAttackTime = time;
             this.sprite.anims.play("dogAttack", true);
+            sfx.bark.play();
             this.state = dogState.ATTACK;
         }
     }
     attackCheck() {
         this.overlappedPlayer = true;
     }
-    attackComplete(animation, frame, gameObject) {  
+    attackComplete(animation, frame, gameObject) {
+
         if (animation.key == "dogAttack") {
+
             this.state = dogState.TRACK;
             var time = new Date();
             time = time.getTime();
@@ -207,8 +233,8 @@ class Dog {
         if (player.x + 40 < this.x) {
             this.sprite.setVelocityX(-50);
             this.sprite.anims.play("dogWalk", true);
-            this.sprite.flipX = true;  
-        } else if (player.x - 20 > this.x) {
+            this.sprite.flipX = true;
+        } else if (player.x - 40 > this.x) {
             this.sprite.setVelocityX(50);
             this.sprite.anims.play("dogWalk", true);
             this.sprite.flipX = false;
