@@ -28,6 +28,7 @@ var swordActive = true;
 var tempLives = 0;
 var maxLevel = 4;
 sfx = {};
+music = {};
 const dogState = {
     IDLE: "0",
     TRACK: "1",
@@ -71,6 +72,7 @@ function preload() {
 };
 
 function create(){
+    window.addEventListener("resize", resize, false);
     var map = createTilemap.call(this, levelNum, tempLives);
     createCamera.call(this, map);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
