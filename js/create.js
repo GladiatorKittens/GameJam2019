@@ -3,7 +3,8 @@ function createTilemap(mapKey, lives) {
     var tileSet = map.addTilesetImage("tilesheet", "tilesheet");
     var objectSet = map.addTilesetImage("objectsheet", "objectsheet");
     //create layers
-    map.createStaticLayer("sky", [tileSet, objectSet], 0, 0);
+    //map.createStaticLayer("sky", [tileSet, objectSet], 0, 0);
+    this.add.image(0,0,'sky').setScale(10).setScrollFactor(0);
     map.createStaticLayer("parallax", [tileSet, objectSet], 0, 0).setScrollFactor(0.2, 1);
     map.createStaticLayer("background", [tileSet, objectSet], 0, 0);
     map.createStaticLayer("background+", [tileSet, objectSet], 0, 0);
@@ -21,7 +22,7 @@ function createTilemap(mapKey, lives) {
     //player setup
     createPlayer.call(this, playerSpawn,lives);
 
-    
+
 
     //create any spawned in point things
     var enemySpawns = [];
@@ -51,6 +52,27 @@ function createTilemap(mapKey, lives) {
    // map.createStaticLayer("fg2", tileSet, 0, 0);
     return map;
 }
+function createEmitter(){
+  //particles
+    var particles = this.add.particles('smokeBall');
+
+    emitter = particles.createEmitter({
+        x: 100,
+        y: 100,
+        frame: 0,
+        quantity: 5,
+        frequency: 140,
+        angle: { min: -180, max: 0 },
+        speed: 20,
+        scale: { start: 0.3, end: 0.0 },
+        gravityY: 0,
+        lifespan: { min: 100, max: 500 }
+    });
+
+
+    //emitter.setSpeed(200);
+    emitter.setBlendMode(Phaser.BlendModes.ADD);
+}
 function createPlayer(playerSpawn, lives) {
     player = new Player(this, playerSpawn.x, playerSpawn.y,lives, "player");
     player.sprite.setCollideWorldBounds(true);
@@ -72,7 +94,6 @@ function createCamera(map) {
     camera.startFollow(player.sprite);
     camera.setBounds(0, 0, map.width * map.tileWidth, map.height * map.tileHeight);
     camera.zoom = 1;
-    camera.setBackgroundColor("rgba(186, 222, 229, 0)");
 }
 function createKeys() {
     cursors = this.input.keyboard.createCursorKeys();

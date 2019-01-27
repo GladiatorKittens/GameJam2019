@@ -37,6 +37,7 @@ function preload() {
     this.load.image("tilesheet", "/assets/tilesheet.png");
     this.load.image("objectsheet", "assets/objects.png");
     this.load.image("home", "/assets/sign.png");
+    this.load.image("sky","/assets/sky.png");
     //ALL TILEMAPS GO HERE
     this.load.tilemapTiledJSON("1", "/assets/01.json");
     this.load.tilemapTiledJSON("1", "/assets/02.json");
